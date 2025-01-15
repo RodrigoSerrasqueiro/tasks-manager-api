@@ -23,10 +23,10 @@ class TaskService {
     };
   }
 
-  async updateTask({ id, title, description }) {
+  async updateTask({ id, title, description, images }) {
     const updatedTask = await TaskModel.findOneAndUpdate(
       { id },
-      { title, description },
+      { title, description, images },
       { new: true, runValidators: true }
     );
 

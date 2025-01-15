@@ -50,12 +50,13 @@ class TaskController {
       const data = updateTaskBodySchema.parse(req.body);
 
       const { id } = params;
-      const { title, description } = data;
+      const { title, description, images } = data;
 
       const updatedTask = await TaskService.updateTask({
         id,
         title,
         description,
+        images,
       });
 
       return res.status(200).json(updatedTask);
