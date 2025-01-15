@@ -43,10 +43,11 @@ class TaskService {
     };
   }
 
-  async markTaskAsCompleted({ id }) {
+  async changeTaskCompletion({ id }) {
+    const task = await TaskModel.findOne({ id });
     const taskCompleted = await TaskModel.findOneAndUpdate(
       { id },
-      { completed: true },
+      { completed: !task.completed },
       { new: true, runValidators: true }
     );
 

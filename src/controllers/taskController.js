@@ -1,5 +1,5 @@
 import { createTaskSchema } from "../schemas/createTaskSchema.js";
-import { markTaskAsCompletedSchema } from "../schemas/markTaskAsCompletedSchema.js";
+import { changeTaskCompletionSchema } from "../schemas/changeTaskCompletionSchema.js";
 import {
   updateTaskBodySchema,
   updateTaskParamsSchema,
@@ -88,13 +88,13 @@ class TaskController {
     }
   }
 
-  async markTaskAsCompleted(req, res) {
+  async changeTaskCompletion(req, res) {
     try {
-      const params = markTaskAsCompletedSchema.parse(req.params);
+      const params = changeTaskCompletionSchema.parse(req.params);
 
       const { id } = params;
 
-      const taskCompleted = await TaskService.markTaskAsCompleted({ id });
+      const taskCompleted = await TaskService.changeTaskCompletion({ id });
 
       return res.status(200).json(taskCompleted);
     } catch (error) {
