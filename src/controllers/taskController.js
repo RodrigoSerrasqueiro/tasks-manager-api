@@ -1,80 +1,109 @@
-// src/controllers/taskController.js
-import { TaskModel } from "../models/index.js";
+import { createTaskSchema } from "../schemas/createTaskSchema.js";
+import { markTaskAsCompletedSchema } from "../schemas/markTaskAsCompletedSchema.js";
+import {
+  updateTaskBodySchema,
+  updateTaskParamsSchema,
+} from "../schemas/updateTaskSchema.js";
+import { TaskService } from "../services/index.js";
+import { handleValidationError } from "../utils/validationErrors.js";
 
 class TaskController {
   async getAllTasks(_, res) {
     try {
-      const tasks = [
-        { id: 1, title: "Task", description: "Hello", completed: false },
-      ];
-      res.status(200).json(tasks);
+      const tasks = await TaskService.getAllTasks();
+
+      return res.status(200).json(tasks);
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Erro ao buscar tarefas.", error: error.message });
+      return res.status(500).json({
+        message: "Error when searching for tasks.",
+        error: error.message,
+      });
     }
   }
 
-  // Cria uma nova tarefa
   async createTask(req, res) {
     try {
-      const { title, description, completed } = req.body;
+      const data = createTaskSchema.parse(req.body);
 
-      // Cria a tarefa no banco de dados
-      const newTask = await TaskModel.create({
+      const { title, description, images } = data;
+
+      const newTask = await TaskService.createTask({
         title,
         description,
-        completed: completed || false,
+        images,
       });
 
-      res.status(201).json(newTask);
+      return res.status(201).json(newTask);
     } catch (error) {
-      res
+      if (error.name === "ZodError") {
+        return handleValidationError(error, res);
+      }
+      return res
         .status(400)
-        .json({ message: "Erro ao criar tarefa.", error: error.message });
+        .json({ message: "Error creating task.", error: error.message });
     }
   }
 
-  // Atualiza uma tarefa existente
   async updateTask(req, res) {
     try {
-      const { id } = req.params;
-      const { title, description, completed } = req.body;
+      const params = updateTaskParamsSchema.parse(req.params);
+      const data = updateTaskBodySchema.parse(req.body);
 
-      const updatedTask = await TaskModel.findByIdAndUpdate(
+      const { id } = params;
+      const { title, description } = data;
+
+      const updatedTask = await TaskService.updateTask({
         id,
-        { title, description, completed },
-        { new: true, runValidators: true } // Retorna o documento atualizado
-      );
+        title,
+        description,
+      });
 
-      if (!updatedTask) {
-        return res.status(404).json({ message: "Tarefa não encontrada." });
-      }
-
-      res.status(200).json(updatedTask);
+      return res.status(200).json(updatedTask);
     } catch (error) {
-      res
+      if (error.name === "ZodError") {
+        return handleValidationError(error, res);
+      }
+      return res
         .status(400)
-        .json({ message: "Erro ao atualizar tarefa.", error: error.message });
+        .json({ message: "Error updating task.", error: error.message });
     }
   }
 
-  // Exclui uma tarefa
   async deleteTask(req, res) {
     try {
-      const { id } = req.params;
+      const params = updateTaskParamsSchema.parse(req.params);
 
-      const deletedTask = await TaskModel.findByIdAndDelete(id);
+      const { id } = params;
 
-      if (!deletedTask) {
-        return res.status(404).json({ message: "Tarefa não encontrada." });
-      }
+      const deletedTask = await TaskService.deleteTask({ id });
 
-      res.status(200).json({ message: "Tarefa excluída com sucesso." });
+      return res.status(200).json(deletedTask);
     } catch (error) {
-      res
+      if (error.name === "ZodError") {
+        return handleValidationError(error, res);
+      }
+      return res
         .status(500)
-        .json({ message: "Erro ao excluir tarefa.", error: error.message });
+        .json({ message: "Error deleting task.", error: error.message });
+    }
+  }
+
+  async markTaskAsCompleted(req, res) {
+    try {
+      const params = markTaskAsCompletedSchema.parse(req.params);
+
+      const { id } = params;
+
+      const taskCompleted = await TaskService.markTaskAsCompleted({ id });
+
+      return res.status(200).json(taskCompleted);
+    } catch (error) {
+      if (error.name === "ZodError") {
+        return handleValidationError(error, res);
+      }
+      return res
+        .status(500)
+        .json({ message: "Error updating task.", error: error.message });
     }
   }
 }
