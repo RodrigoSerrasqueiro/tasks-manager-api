@@ -1,4 +1,4 @@
-# API Project
+# Task Manager API
 
 ## Instruções de Instalação e Configuração
 
