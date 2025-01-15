@@ -67,14 +67,7 @@ Este documento fornece todas as instruções necessárias para configurar e exec
 
 - **Scripts Disponíveis:**
   - `npm run dev`: Inicia o servidor em modo de desenvolvimento.
-  - `npm run build`: Compila o projeto para produção.
-  - `npm start`: Inicia o servidor em produção após a compilação.
-
-- **Testes:**
-  Caso o projeto contenha testes automatizados, eles podem ser executados com o comando:
-  ```bash
-  npm test
-  ```
+  - `npm start`: Inicia o servidor em produção.
 
 ### Suporte
 Se encontrar algum problema, sinta-se à vontade para abrir uma **issue** no repositório ou entre em contato diretamente com o mantenedor do projeto.
