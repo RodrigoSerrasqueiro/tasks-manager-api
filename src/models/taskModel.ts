@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { type ValidatorFunction } from 'mongoose';
 
 const taskSchema = new mongoose.Schema(
   {
@@ -10,16 +10,16 @@ const taskSchema = new mongoose.Schema(
       type: [String],
       required: true,
       validate: {
-        validator: (v) => {
+        validator: (v: ValidatorFunction) => {
           return v.length > 0;
         },
-        message: "At least one image is required",
-      },
-    },
+        message: 'At least one image is required'
+      }
+    }
   },
   { timestamps: true }
 );
 
-const TaskModel = mongoose.model("tasks", taskSchema);
+const TaskModel = mongoose.model('tasks', taskSchema);
 
 export default TaskModel;
